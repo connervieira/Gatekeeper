@@ -1,0 +1,23 @@
+body {
+    background: #222222;
+    color: #ffffff;
+}
+
+hr {
+    color: #999999;
+}
+
+.button {
+    background: #666666;
+}
+
+.address {
+    color: #bbbbbb;
+}
+
+.good {
+    color: #88ff88;
+}
+.bad {
+    color: #ff8888;
+}
