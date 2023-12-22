@@ -14,7 +14,15 @@ if (in_array($identifier, array_keys($gatekeeper_config["devices"]))) { // Check
     $gatekeeper_events = load_events_database();
     $gatekeeper_events[$processed_data["info"]["processing"]["captured_timestamp"]] = array();
     $gatekeeper_events[$processed_data["info"]["processing"]["captured_timestamp"]]["device"] = $identifier;
-    $gatekeeper_events[$processed_data["info"]["processing"]["captured_timestamp"]]["plates"] = $processed_data["results"];
+    foreach ($processed_data["results"] as $key => $plate) { // Iterate through each plate in the received results.
+        if (isset($gatekeeper_events[$processed_data["info"]["processing"]["captured_timestamp"]]["plates"][$plate[0]["plate"]])) { // Check to see if this plate has already been seen in this submission.
+            if (sizeof($gatekeeper_events[$processed_data["info"]["processing"]["captured_timestamp"]]["plates"][$plate[0]["plate"]]) < sizeof($processed_data["results"][$key])) { // Check to see if the newly encountered instance of this plate has more guesses than the existing instance.
+                $gatekeeper_events[$processed_data["info"]["processing"]["captured_timestamp"]]["plates"][$plate[0]["plate"]] = $processed_data["results"][$key]; // Replace the existing instance with this newly encountered instance.
+            }
+        } else {
+            $gatekeeper_events[$processed_data["info"]["processing"]["captured_timestamp"]]["plates"][$plate[0]["plate"]] = $processed_data["results"][$key];
+        }
+    }
     save_events_database($gatekeeper_events);
 }
 ?>

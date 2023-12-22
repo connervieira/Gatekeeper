@@ -43,3 +43,10 @@ input, select {
 .address {
     margin-bottom: -15px;
 }
+
+.agetext {
+    margin-top: -20px;
+}
+.platetext {
+    margin-top: -10px;
+}
