@@ -68,21 +68,73 @@ if ($_POST["interface>theme"] == "dark" or $_POST["interface>theme"] == "light")
             }
 
 
-            // Add the targets set by the user to the configuration.
+            // Add the vehicles set by the user to the configuration.
             $original_vehicle_count = sizeof($gatekeeper_config["vehicles"]); // This variables holds the number of vehicles in the configuration database before processing the new ones.
             $gatekeeper_config["vehicles"] = array(); // Reset the array of vehicles.
-            $vehicle_count = 0; // This is a placeholder that will keep track of each target sequentially.
-            for ($i =0; $i <= $vehicle_target_count + 1; $i++) { // Run once for each vehicle in the configuration, plus one to account for the new entry.
-                $vehicle_plate = $_POST["vehicles>" . strval($vehicle_count) . ">plate"];
+            $vehicle_count = 0; // This is a placeholder that will keep track of each vehicle sequentially.
+            for ($i =0; $i <= $original_vehicle_count + 1; $i++) { // Run once for each vehicle in the configuration, plus one to account for the new entry.
+                $vehicle_plate = strtoupper($_POST["vehicles>" . strval($vehicle_count) . ">plate"]);
                 if (strlen($vehicle_plate) > 0) {
-                    // TODO: Add input validation.
-                    $gatekeeper_config["vehicles"][$vehicle_plate]["name"] = $_POST["vehicles>" . strval($target_count) . ">name"];
-                    $gatekeeper_config["vehicles"][$vehicle_plate]["make"] = $_POST["vehicles>" . strval($target_count) . ">make"];
-                    $gatekeeper_config["vehicles"][$vehicle_plate]["model"] = $_POST["vehicles>" . strval($target_count) . ">model"];
-                    $gatekeeper_config["vehicles"][$vehicle_plate]["year"] = intval($_POST["vehicles>" . strval($target_count) . ">year"]);
-                    $gatekeeper_config["vehicles"][$vehicle_plate]["trust"] = intval($_POST["vehicles>" . strval($target_count) . ">trust"]);
+                    $gatekeeper_config["vehicles"][$vehicle_plate]["name"] = $_POST["vehicles>" . strval($vehicle_count) . ">name"];
+                    $gatekeeper_config["vehicles"][$vehicle_plate]["make"] = $_POST["vehicles>" . strval($vehicle_count) . ">make"];
+                    $gatekeeper_config["vehicles"][$vehicle_plate]["model"] = $_POST["vehicles>" . strval($vehicle_count) . ">model"];
+                    $gatekeeper_config["vehicles"][$vehicle_plate]["year"] = intval($_POST["vehicles>" . strval($vehicle_count) . ">year"]);
+                    $gatekeeper_config["vehicles"][$vehicle_plate]["trust"] = intval($_POST["vehicles>" . strval($vehicle_count) . ">trust"]);
+
+                    if ($vehicle_plate !== preg_replace("/[^A-Z0-9]/", '', $vehicle_plate)) {
+                        echo "<p class='bad'>The vehicle license plate '" . htmlspecialchars($vehicle_plate) . "' is invalid.</p>";
+                        $configuration_valid = false;
+                    }
+                    if ($gatekeeper_config["vehicles"][$vehicle_plate]["name"] !== preg_replace("/[^a-zA-Z0-9\-\ \.\,\?\']/", '', $gatekeeper_config["vehicles"][$vehicle_plate]["name"])) {
+                        echo "<p class='bad'>The vehicle name '" . htmlspecialchars($gatekeeper_config["vehicles"][$vehicle_plate]["name"]) . "' for '" . htmlspecialchars($vehicle_plate) . "' is invalid.</p>";
+                        $configuration_valid = false;
+                    }
+                    if ($gatekeeper_config["vehicles"][$vehicle_plate]["make"] !== preg_replace("/[^a-zA-Z0-9]/", '', $gatekeeper_config["vehicles"][$vehicle_plate]["make"])) {
+                        echo "<p class='bad'>The vehicle make '" . htmlspecialchars($gatekeeper_config["vehicles"][$vehicle_plate]["make"]) . "' for '" . htmlspecialchars($vehicle_plate) . "' is invalid.</p>";
+                        $configuration_valid = false;
+                    }
+                    if ($gatekeeper_config["vehicles"][$vehicle_plate]["model"] !== preg_replace("/[^a-zA-Z0-9]/", '', $gatekeeper_config["vehicles"][$vehicle_plate]["model"])) {
+                        echo "<p class='bad'>The vehicle model '" . htmlspecialchars($gatekeeper_config["vehicles"][$vehicle_plate]["model"]) . "' for '" . htmlspecialchars($vehicle_plate) . "' is invalid.</p>";
+                        $configuration_valid = false;
+                    }
+                    if (intval($gatekeeper_config["vehicles"][$vehicle_plate]["year"]) < 0 and intval($gatekeeper_config["vehicles"][$vehicle_plate]["year"]) > 3000) {
+                        echo "<p class='bad'>The vehicle year '" . htmlspecialchars($gatekeeper_config["vehicles"][$vehicle_plate]["year"]) . "' for '" . htmlspecialchars($vehicle_plate) . "' is invalid.</p>";
+                        $configuration_valid = false;
+                    }
+                    if (intval($gatekeeper_config["vehicles"][$vehicle_plate]["trust"]) < -5 and intval($gatekeeper_config["vehicles"][$vehicle_plate]["trust"]) > 5) {
+                        echo "<p class='bad'>The vehicle year '" . htmlspecialchars($gatekeeper_config["vehicles"][$vehicle_plate]["trust"]) . "' for '" . htmlspecialchars($vehicle_plate) . "' is invalid.</p>";
+                        $configuration_valid = false;
+                    }
                 }
-                $target_count = $target_count + 1;
+                $vehicle_count = $vehicle_count + 1;
+            }
+
+
+
+            // Add the devices set by the user to the configuration.
+            $original_device_count = sizeof($gatekeeper_config["devices"]); // This variables holds the number of devices in the configuration database before processing the new ones.
+            $gatekeeper_config["devices"] = array(); // Reset the array of deviecs.
+            $device_count = 0; // This is a placeholder that will keep track of each device sequentially.
+            for ($i =0; $i <= $original_device_count + 1; $i++) { // Run once for each device in the configuration, plus one to account for the new entry.
+                $device_id = $_POST["devices>" . strval($device_count) . ">id"];
+                if (strlen($device_id) > 0) {
+                    $gatekeeper_config["devices"][$device_id]["name"] = $_POST["devices>" . strval($device_count) . ">name"];
+                    $gatekeeper_config["devices"][$device_id]["type"] = $_POST["devices>" . strval($device_count) . ">type"];
+
+                    if ($device_id !== preg_replace("/[^a-zA-Z0-9\ \.\-]/", '', $device_id)) {
+                        echo "<p class='bad'>The device identifier '" . htmlspecialchars($vehicle_plate) . "' is invalid.</p>";
+                        $configuration_valid = false;
+                    }
+                    if ($gatekeeper_config["devices"][$device_id]["name"] !== preg_replace("/[^a-zA-Z0-9\-\ \.\,\?\']/", '', $gatekeeper_config["devices"][$device_id]["name"])) {
+                        echo "<p class='bad'>The device name '" . htmlspecialchars($gatekeeper_config["devices"][$device_id]["name"]) . "' for '" . htmlspecialchars($device_id) . "' is invalid.</p>";
+                        $configuration_valid = false;
+                    }
+                    if ($gatekeeper_config["devices"][$device_id]["type"] !== "enter" and $gatekeeper_config["devices"][$device_id]["type"] !== "exit" and $gatekeeper_config["devices"][$device_id]["type"] !== "both" and $gatekeeper_config["devices"][$device_id]["type"] !== "neither") {
+                        echo "<p class='bad'>The device type '" . htmlspecialchars($gatekeeper_config["devices"][$device_id]["type"]) . "' for '" . htmlspecialchars($device_id) . "' is invalid.</p>";
+                        $configuration_valid = false;
+                    }
+                }
+                $device_count = $device_count + 1;
             }
 
 
@@ -102,8 +154,6 @@ if ($_POST["interface>theme"] == "dark" or $_POST["interface>theme"] == "light")
 
 
             <hr><h3>Interface</h3>
-            <label for="interface>show_ip">Show Target Addresses:</label> <input name="interface>show_ip" id="interface>show_ip" type="checkbox" <?php if ($gatekeeper_config["interface"]["show_ip"] == true) { echo "checked"; } ?>><br>
-
             <label for="interface>theme">Theme:</label>
             <select name="interface>theme" id="interface>theme">
                 <option value="light" <?php if ($gatekeeper_config["interface"]["theme"] == "light") { echo "selected"; } ?>>Light</option>
@@ -113,24 +163,52 @@ if ($_POST["interface>theme"] == "dark" or $_POST["interface>theme"] == "light")
 
             <hr><h3>Vehicles</h3>
             <?php
-            $shown_targets = 0;
+            $shown_vehicles = 0;
             foreach ($gatekeeper_config["vehicles"] as $key => $data) { // Iterate through each vehicle currently in the configuration.
                 echo "<h4>" . $key . "</h4>";
-                echo "<label for='vehicles>" . $shown_targets . ">plate'>Plate:</label> <input name='vehicles>" . $shown_targets . ">plate' id='vehicles>" . $shown_targets . ">plate' placeholder='AAA0000' type='text' value=\"" . $key . "\"><br>";
-                echo "<label for='vehicles>" . $shown_targets . ">name'>Name:</label> <input name='vehicles>" . $shown_targets . ">name' id='vehicles>" . $shown_targets . ">name' placeholder='Bob\'s Car' type='text' value=\"" . $data["name"] . "\"><br>";
-                echo "<label for='vehicles>" . $shown_targets . ">make'>Make:</label> <input name='vehicles>" . $shown_targets . ">make ' id='vehicles>" . $shown_targets . ">make' placeholder='Toyota' type='text' value=\"" . $data["make"] . "\"><br>";
-                echo "<label for='vehicles>" . $shown_targets . ">model'>Model:</label> <input name='vehicles>" . $shown_targets . ">model' id='vehicles>" . $shown_targets . ">model' placeholder='Corolla' type='text' value=\"" . $data["model"] . "\"><br>";
-                echo "<label for='vehicles>" . $shown_targets . ">year'>Year:</label> <input name='vehicles>" . $shown_targets . ">year' id='vehicles>" . $shown_targets . ">year' placeholder='2013' type='number' min='1700' step='1' value=\"" . $data["year"] . "\"><br>";
-                echo "<label for='vehicles>" . $shown_targets . ">trust'>Trust:</label> <input name='vehicles>" . $shown_targets . ">trust' id='vehicles>" . $shown_targets . ">trust' placeholder='3' type='number' min='-5' max='5' step='1' value=\"" . $data["trust"] . "\"><br>";
-                $shown_targets = $shown_targets + 1;
+                echo "<label for='vehicles>" . $shown_vehicles . ">plate'>Plate:</label> <input name='vehicles>" . $shown_vehicles . ">plate' id='vehicles>" . $shown_vehicles . ">plate' placeholder='AAA0000' type='text' value=\"" . $key . "\"><br>";
+                echo "<label for='vehicles>" . $shown_vehicles . ">name'>Name:</label> <input name='vehicles>" . $shown_vehicles . ">name' id='vehicles>" . $shown_vehicles . ">name' placeholder=\"Bob\'s Car\" type='text' value=\"" . $data["name"] . "\"><br>";
+                echo "<label for='vehicles>" . $shown_vehicles . ">make'>Make:</label> <input name='vehicles>" . $shown_vehicles . ">make' id='vehicles>" . $shown_vehicles . ">make' placeholder='Toyota' type='text' value=\"" . $data["make"] . "\"><br>";
+                echo "<label for='vehicles>" . $shown_vehicles . ">model'>Model:</label> <input name='vehicles>" . $shown_vehicles . ">model' id='vehicles>" . $shown_vehicles . ">model' placeholder='Corolla' type='text' value=\"" . $data["model"] . "\"><br>";
+                echo "<label for='vehicles>" . $shown_vehicles . ">year'>Year:</label> <input name='vehicles>" . $shown_vehicles . ">year' id='vehicles>" . $shown_vehicles . ">year' placeholder='2013' type='number' min='1700' step='1' value=\"" . $data["year"] . "\"><br>";
+                echo "<label for='vehicles>" . $shown_vehicles . ">trust'>Trust:</label> <input name='vehicles>" . $shown_vehicles . ">trust' id='vehicles>" . $shown_vehicles . ">trust' placeholder='3' type='number' min='-5' max='5' step='1' value=\"" . $data["trust"] . "\"><br>";
+                $shown_vehicles = $shown_vehicles + 1;
             }
             echo "<h4>New Vehicle</h4>";
-            echo "<label for='vehicles>" . $shown_targets . ">plate'>Plate:</label> <input name='vehicles>" . $shown_targets . ">plate' id='vehicles>" . $shown_targets . ">plate' placeholder='AAA0000' type='text'><br>";
-            echo "<label for='vehicles>" . $shown_targets . ">name'>Name:</label> <input name='vehicles>" . $shown_targets . ">name' id='vehicles>" . $shown_targets . ">name' placeholder='Bob\'s Car' type='text'><br>";
-            echo "<label for='vehicles>" . $shown_targets . ">make'>Make:</label> <input name='vehicles>" . $shown_targets . ">make ' id='vehicles>" . $shown_targets . ">make' placeholder='Toyota' type='text'><br>";
-            echo "<label for='vehicles>" . $shown_targets . ">model'>Model:</label> <input name='vehicles>" . $shown_targets . ">model' id='vehicles>" . $shown_targets . ">model' placeholder='Corolla' type='text'><br>";
-            echo "<label for='vehicles>" . $shown_targets . ">year'>Year:</label> <input name='vehicles>" . $shown_targets . ">year' id='vehicles>" . $shown_targets . ">year' placeholder='2013' type='number' min='1700' step='1'><br>";
-            echo "<label for='vehicles>" . $shown_targets . ">trust'>Trust:</label> <input name='vehicles>" . $shown_targets . ">trust' id='vehicles>" . $shown_targets . ">trust' placeholder='3' type='number' min='-5' max='5' step='1' value=\"0\"><br>";
+            echo "<label for='vehicles>" . $shown_vehicles . ">plate'>Plate:</label> <input name='vehicles>" . $shown_vehicles . ">plate' id='vehicles>" . $shown_vehicles . ">plate' placeholder='AAA0000' type='text'><br>";
+            echo '<label for="vehicles>' . $shown_vehicles . '>name">Name:</label> <input name="vehicles>' . $shown_vehicles . '>name" id="vehicles>' . $shown_vehicles . '>name" placeholder="Bob\'s Car" type="text"><br>';
+            echo "<label for='vehicles>" . $shown_vehicles . ">make'>Make:</label> <input name='vehicles>" . $shown_vehicles . ">make' id='vehicles>" . $shown_vehicles . ">make' placeholder='Toyota' type='text'><br>";
+            echo "<label for='vehicles>" . $shown_vehicles . ">model'>Model:</label> <input name='vehicles>" . $shown_vehicles . ">model' id='vehicles>" . $shown_vehicles . ">model' placeholder='Corolla' type='text'><br>";
+            echo "<label for='vehicles>" . $shown_vehicles . ">year'>Year:</label> <input name='vehicles>" . $shown_vehicles . ">year' id='vehicles>" . $shown_vehicles . ">year' placeholder='2013' type='number' min='1700' step='1'><br>";
+            echo "<label for='vehicles>" . $shown_vehicles . ">trust'>Trust:</label> <input name='vehicles>" . $shown_vehicles . ">trust' id='vehicles>" . $shown_vehicles . ">trust' placeholder='3' type='number' min='-5' max='5' step='1' value=\"0\"><br>";
+            ?>
+
+
+            <hr><h3>Devices</h3>
+            <?php
+            $shown_devices = 0;
+            foreach ($gatekeeper_config["devices"] as $key => $data) { // Iterate through each device currently in the configuration.
+                echo "<h4>" . $key . "</h4>";
+                echo "<label for='devices>" . $shown_devices . ">id'>Identifier:</label> <input name='devices>" . $shown_devices . ">id' id='devices>" . $shown_devices . ">id' placeholder='abcdef123456789' type='text' value=\"" . $key . "\"><br>";
+                echo "<label for='devices>" . $shown_devices . ">name'>Name:</label> <input name='devices>" . $shown_devices . ">name' id='devices>" . $shown_devices . ">name' placeholder='North Driveway' type='text' value=\"" . $data["name"] . "\"><br>";
+                echo "<label for='devices>" . $shown_devices . ">type'>Type:</label>";
+                echo "<select name='devices>" . $shown_devices . ">type' id='devices>" . $shown_devices . ">type'>";
+                echo "    <option value='enter'"; if ($data["type"] == "enter") { echo "selected"; } echo ">Entrance</option>";
+                echo "    <option value='exit'"; if ($data["type"] == "exit") { echo "selected"; } echo ">Exit</option>";
+                echo "    <option value='both'"; if ($data["type"] == "both") { echo "selected"; } echo ">Both</option>";
+                echo "    <option value='neither'"; if ($data["type"] == "neither") { echo "selected"; } echo ">Neither</option>";
+                echo "</select><br>";
+                $shown_devices = $shown_devices + 1;
+            }
+            echo "<h4>New Vehicle</h4>";
+            echo "<label for='devices>" . $shown_devices . ">id'>Identifier:</label> <input name='devices>" . $shown_devices . ">id' id='devices>" . $shown_devices . ">id' placeholder='abcdef123456789' type='text'><br>";
+            echo '<label for="devices>' . $shown_devices . '>name">Name:</label> <input name="devices>' . $shown_devices . '>name" id="devices>' . $shown_devices . '>name" placeholder="North Driveway" type="text"><br>';
+            echo "<select name='devices>" . $shown_devices . ">type' id='devices>" . $shown_devices . ">type'>";
+            echo "    <option value='enter'>Entrance</option>";
+            echo "    <option value='exit'>Exit</option>";
+            echo "    <option value='both'>Both</option>";
+            echo "    <option value='neither'>Neither</option>";
+            echo "</select><br>";
             ?>
             <hr><input class="button" type="submit" value="Submit" name="submit" id="submit">
         </form>
