@@ -1,6 +1,7 @@
 <?php
 include "./config.php";
 include "./events.php";
+include "./alerts.php";
 
 $received_data = strval($_POST["results"]); // Get the raw submitted results.
 $processed_data = json_decode($received_data, true); // Decode the JSON data received.
@@ -23,6 +24,12 @@ if (in_array($identifier, array_keys($gatekeeper_config["devices"]))) { // Check
             $gatekeeper_events[$processed_data["info"]["processing"]["captured_timestamp"]]["plates"][$plate[0]["plate"]] = $processed_data["results"][$key];
         }
     }
+
+    process_event_for_alerts($gatekeeper_events[$processed_data["info"]["processing"]["captured_timestamp"]]["device"], $gatekeeper_events[$processed_data["info"]["processing"]["captured_timestamp"]]["plates"]); // Send this event to alert processing.
     save_events_database($gatekeeper_events);
+    echo "Ingested event";
+} else {
+    echo "Invalid identifier";
+    exit();
 }
 ?>
