@@ -44,11 +44,13 @@ $unheard_alerts = check_for_alerts();
             echo "<div class='eventdisplay'>";
             echo "<h3>" . date("Y-m-d H:i:s", $time) . "</h3>"; // Display the date and time that this event occurred.
             echo "<p class=\"agetext\">" . seconds_to_human_readable($age) . " ago</p>"; // Display the age of this event in a human readable format.
-            foreach ($data["plates"] as $plate) { // Iterate through each plate in this event.
-                if (in_array($plate[0]["plate"], array_keys($gatekeeper_config["vehicles"]))) { // Check to see if this plate matches a known plate from the configuration.
-                    echo "<p class=\"platetext\"><b>" . $plate[0]["plate"] . "</b></p>"; // Display this plate in bold.
-                } else {
-                    echo "<p class=\"platetext\">" . $plate[0]["plate"] . "</p>"; // Display this plate in plain text.
+            foreach (array_keys($data["plates"]) as $plate) { // Iterate through each plate in this event.
+                if (isset($plate)) {
+                    if (in_array($plate, array_keys($gatekeeper_config["vehicles"]))) { // Check to see if this plate matches a known plate from the configuration.
+                        echo "<p class=\"platetext\"><b>" . $plate . "</b></p>"; // Display this plate in bold.
+                    } else {
+                        echo "<p class=\"platetext\">" . $plate . "</p>"; // Display this plate in plain text.
+                    }
                 }
             }
             echo "</div>";
