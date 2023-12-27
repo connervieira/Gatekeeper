@@ -26,6 +26,10 @@ input, select {
     border-radius: 7px;
 }
 
+h4 {
+    margin-bottom: 5px;
+}
+
 .navbar {
     text-align: left;
 }

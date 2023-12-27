@@ -8,6 +8,10 @@ if (!file_exists($gatekeeper_config_database_filepath)) { // Check to see if the
     $gatekeeper_config["auth"]["authorized_users"] = array();
     $gatekeeper_config["interface"]["branding"]["name"] = "Gatekeeper";
     $gatekeeper_config["interface"]["theme"] = "dark";
+    $gatekeeper_config["alerts"]["voice"]["enabled"] = true;
+    $gatekeeper_config["alerts"]["notifications"]["enabled"] = false;
+    $gatekeeper_config["alerts"]["notifications"]["provider"] = "ntfy";
+    $gatekeeper_config["alerts"]["notifications"]["server"] = "https://ntfy.sh/mytopic";
     $gatekeeper_config["devices"] = array();
     $gatekeeper_config["vehicles"] = array();
 

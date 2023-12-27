@@ -20,6 +20,7 @@ $unheard_alerts = check_for_alerts();
 ?>
 <html lang="en">
     <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title><?php echo htmlspecialchars(strval($gatekeeper_config["interface"]["branding"]["name"])); ?></title>
         <link rel="stylesheet" type="text/css" href="./styles/main.css">
         <link rel="stylesheet" type="text/css" href="./styles/themes/<?php echo $gatekeeper_config["interface"]["theme"]; ?>.css">
@@ -58,9 +59,11 @@ $unheard_alerts = check_for_alerts();
         }
 
 
-        $first_unheard_alert = array_slice($unheard_alerts, 0, 1, true);
-        foreach ($first_unheard_alert as $time => $alert) {
-            speak_alert($time, $alert["alert"][1], $alert["alert"][0], $alert["alert"][2]);
+        if ($gatekeeper_config["alerts"]["voice"]["enabled"]) {
+            $first_unheard_alert = array_slice($unheard_alerts, 0, 1, true);
+            foreach ($first_unheard_alert as $time => $alert) {
+                speak_alert($time, $alert["alert"][1], $alert["alert"][0], $alert["alert"][2]);
+            }
         }
         ?>
     </body>

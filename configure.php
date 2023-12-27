@@ -14,6 +14,7 @@ if ($_POST["interface>theme"] == "dark" or $_POST["interface>theme"] == "light")
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title><?php echo htmlspecialchars(strval($gatekeeper_config["interface"]["branding"]["name"])); ?> - Configure</title>
         <link rel="stylesheet" type="text/css" href="./styles/main.css">
         <link rel="stylesheet" type="text/css" href="./styles/themes/<?php echo $gatekeeper_config["interface"]["theme"]; ?>.css">
@@ -66,6 +67,18 @@ if ($_POST["interface>theme"] == "dark" or $_POST["interface>theme"] == "light")
                 echo "<p class='bad'>The interface theme is set to an invalid value.</p>";
                 $configuration_valid = false;
             }
+
+
+
+            if ($_POST["alerts>voice>enabled"] == "on") { $gatekeeper_config["alerts"]["voice"]["enabled"] = true; } else { $gatekeeper_config["alerts"]["voice"]["enabled"] = false; }
+            if ($_POST["alerts>notifications>enabled"] == "on") { $gatekeeper_config["alerts"]["notifications"]["enabled"] = true; } else { $gatekeeper_config["alerts"]["notifications"]["enabled"] = false; }
+            if ($_POST["alerts>notifications>provider"] == "ntfy" or $_POST["alerts>notifications>provider"] == "gotify") {
+                $gatekeeper_config["alerts"]["notifications"]["provider"] = $_POST["alerts>notifications>provider"];
+            } else {
+                echo "<p class='bad'>The alert notification provider is set to an invalid value.</p>";
+                $configuration_valid = false;
+            }
+            $gatekeeper_config["alerts"]["notifications"]["server"] = $_POST["alerts>notifications>server"];
 
 
             // Add the vehicles set by the user to the configuration.
@@ -161,27 +174,17 @@ if ($_POST["interface>theme"] == "dark" or $_POST["interface>theme"] == "light")
             </select>
 
 
-            <hr><h3>Vehicles</h3>
-            <?php
-            $shown_vehicles = 0;
-            foreach ($gatekeeper_config["vehicles"] as $key => $data) { // Iterate through each vehicle currently in the configuration.
-                echo "<h4>" . $key . "</h4>";
-                echo "<label for='vehicles>" . $shown_vehicles . ">plate'>Plate:</label> <input name='vehicles>" . $shown_vehicles . ">plate' id='vehicles>" . $shown_vehicles . ">plate' placeholder='AAA0000' type='text' value=\"" . $key . "\"><br>";
-                echo "<label for='vehicles>" . $shown_vehicles . ">name'>Name:</label> <input name='vehicles>" . $shown_vehicles . ">name' id='vehicles>" . $shown_vehicles . ">name' placeholder=\"Bob\'s Car\" type='text' value=\"" . $data["name"] . "\"><br>";
-                echo "<label for='vehicles>" . $shown_vehicles . ">make'>Make:</label> <input name='vehicles>" . $shown_vehicles . ">make' id='vehicles>" . $shown_vehicles . ">make' placeholder='Toyota' type='text' value=\"" . $data["make"] . "\"><br>";
-                echo "<label for='vehicles>" . $shown_vehicles . ">model'>Model:</label> <input name='vehicles>" . $shown_vehicles . ">model' id='vehicles>" . $shown_vehicles . ">model' placeholder='Corolla' type='text' value=\"" . $data["model"] . "\"><br>";
-                echo "<label for='vehicles>" . $shown_vehicles . ">year'>Year:</label> <input name='vehicles>" . $shown_vehicles . ">year' id='vehicles>" . $shown_vehicles . ">year' placeholder='2013' type='number' min='1700' step='1' value=\"" . $data["year"] . "\"><br>";
-                echo "<label for='vehicles>" . $shown_vehicles . ">trust'>Trust:</label> <input name='vehicles>" . $shown_vehicles . ">trust' id='vehicles>" . $shown_vehicles . ">trust' placeholder='3' type='number' min='-5' max='5' step='1' value=\"" . $data["trust"] . "\"><br>";
-                $shown_vehicles = $shown_vehicles + 1;
-            }
-            echo "<h4>New Vehicle</h4>";
-            echo "<label for='vehicles>" . $shown_vehicles . ">plate'>Plate:</label> <input name='vehicles>" . $shown_vehicles . ">plate' id='vehicles>" . $shown_vehicles . ">plate' placeholder='AAA0000' type='text'><br>";
-            echo '<label for="vehicles>' . $shown_vehicles . '>name">Name:</label> <input name="vehicles>' . $shown_vehicles . '>name" id="vehicles>' . $shown_vehicles . '>name" placeholder="Bob\'s Car" type="text"><br>';
-            echo "<label for='vehicles>" . $shown_vehicles . ">make'>Make:</label> <input name='vehicles>" . $shown_vehicles . ">make' id='vehicles>" . $shown_vehicles . ">make' placeholder='Toyota' type='text'><br>";
-            echo "<label for='vehicles>" . $shown_vehicles . ">model'>Model:</label> <input name='vehicles>" . $shown_vehicles . ">model' id='vehicles>" . $shown_vehicles . ">model' placeholder='Corolla' type='text'><br>";
-            echo "<label for='vehicles>" . $shown_vehicles . ">year'>Year:</label> <input name='vehicles>" . $shown_vehicles . ">year' id='vehicles>" . $shown_vehicles . ">year' placeholder='2013' type='number' min='1700' step='1'><br>";
-            echo "<label for='vehicles>" . $shown_vehicles . ">trust'>Trust:</label> <input name='vehicles>" . $shown_vehicles . ">trust' id='vehicles>" . $shown_vehicles . ">trust' placeholder='3' type='number' min='-5' max='5' step='1' value=\"0\"><br>";
-            ?>
+            <hr><h3>Alerts</h3>
+            <h4>Voice</h4>
+            <label for="alerts>voice>enabled">Enabled:</label> <input type="checkbox" id="alerts>voice>enabled" name="alerts>voice>enabled" <?php if ($gatekeeper_config["alerts"]["voice"]["enabled"]) { echo "checked"; } ?>>
+            <h4>Notifications</h4>
+            <label for="alerts>notifications>enabled">Enabled:</label> <input type="checkbox" id="alerts>notifications>enabled" name="alerts>notifications>enabled"  <?php if ($gatekeeper_config["alerts"]["notifications"]["enabled"]) { echo "checked"; } ?>><br>
+            <label for="alerts>notifications>provider">Provider:</label>
+            <select name="alerts>notifications>provider" id="alerts>notifications>provider">
+                <option value="ntfy" <?php if ($gatekeeper_config["alerts"]["notifications"]["provider"] == "ntfy") { echo "selected"; } ?>>NTFY</option>
+                <option value="gotify" <?php if ($gatekeeper_config["alerts"]["notifications"]["provider"] == "gotify") { echo "selected"; } ?>>Gotify</option>
+            </select><br>
+            <label for="alerts>notifications>server">Server:</label> <input name="alerts>notifications>server" id="alerts>notifications>server" placeholder="http://example.com" type="text" value="<?php echo $gatekeeper_config["alerts"]["notifications"]["server"]; ?>"><br>
 
 
             <hr><h3>Devices</h3>
@@ -210,6 +213,31 @@ if ($_POST["interface>theme"] == "dark" or $_POST["interface>theme"] == "light")
             echo "    <option value='neither'>Neither</option>";
             echo "</select><br>";
             ?>
+
+
+            <hr><h3>Vehicles</h3>
+            <?php
+            $shown_vehicles = 0;
+            foreach ($gatekeeper_config["vehicles"] as $key => $data) { // Iterate through each vehicle currently in the configuration.
+                echo "<h4>" . $key . "</h4>";
+                echo "<label for='vehicles>" . $shown_vehicles . ">plate'>Plate:</label> <input name='vehicles>" . $shown_vehicles . ">plate' id='vehicles>" . $shown_vehicles . ">plate' placeholder='AAA0000' type='text' value=\"" . $key . "\"><br>";
+                echo "<label for='vehicles>" . $shown_vehicles . ">name'>Name:</label> <input name='vehicles>" . $shown_vehicles . ">name' id='vehicles>" . $shown_vehicles . ">name' placeholder=\"Bob\'s Car\" type='text' value=\"" . $data["name"] . "\"><br>";
+                echo "<label for='vehicles>" . $shown_vehicles . ">make'>Make:</label> <input name='vehicles>" . $shown_vehicles . ">make' id='vehicles>" . $shown_vehicles . ">make' placeholder='Toyota' type='text' value=\"" . $data["make"] . "\"><br>";
+                echo "<label for='vehicles>" . $shown_vehicles . ">model'>Model:</label> <input name='vehicles>" . $shown_vehicles . ">model' id='vehicles>" . $shown_vehicles . ">model' placeholder='Corolla' type='text' value=\"" . $data["model"] . "\"><br>";
+                echo "<label for='vehicles>" . $shown_vehicles . ">year'>Year:</label> <input name='vehicles>" . $shown_vehicles . ">year' id='vehicles>" . $shown_vehicles . ">year' placeholder='2013' type='number' step='1' value=\"" . $data["year"] . "\"><br>";
+                echo "<label for='vehicles>" . $shown_vehicles . ">trust'>Trust:</label> <input name='vehicles>" . $shown_vehicles . ">trust' id='vehicles>" . $shown_vehicles . ">trust' placeholder='3' type='number' min='-5' max='5' step='1' value=\"" . $data["trust"] . "\"><br>";
+                $shown_vehicles = $shown_vehicles + 1;
+            }
+            echo "<h4>New Vehicle</h4>";
+            echo "<label for='vehicles>" . $shown_vehicles . ">plate'>Plate:</label> <input name='vehicles>" . $shown_vehicles . ">plate' id='vehicles>" . $shown_vehicles . ">plate' placeholder='AAA0000' type='text'><br>";
+            echo '<label for="vehicles>' . $shown_vehicles . '>name">Name:</label> <input name="vehicles>' . $shown_vehicles . '>name" id="vehicles>' . $shown_vehicles . '>name" placeholder="Bob\'s Car" type="text"><br>';
+            echo "<label for='vehicles>" . $shown_vehicles . ">make'>Make:</label> <input name='vehicles>" . $shown_vehicles . ">make' id='vehicles>" . $shown_vehicles . ">make' placeholder='Toyota' type='text'><br>";
+            echo "<label for='vehicles>" . $shown_vehicles . ">model'>Model:</label> <input name='vehicles>" . $shown_vehicles . ">model' id='vehicles>" . $shown_vehicles . ">model' placeholder='Corolla' type='text'><br>";
+            echo "<label for='vehicles>" . $shown_vehicles . ">year'>Year:</label> <input name='vehicles>" . $shown_vehicles . ">year' id='vehicles>" . $shown_vehicles . ">year' placeholder='2013' type='number' step='1'><br>";
+            echo "<label for='vehicles>" . $shown_vehicles . ">trust'>Trust:</label> <input name='vehicles>" . $shown_vehicles . ">trust' id='vehicles>" . $shown_vehicles . ">trust' placeholder='3' type='number' min='-5' max='5' step='1' value=\"0\"><br>";
+            ?>
+
+
             <hr><input class="button" type="submit" value="Submit" name="submit" id="submit">
         </form>
     </body>
