@@ -203,7 +203,7 @@ if ($_POST["interface>theme"] == "dark" or $_POST["interface>theme"] == "light")
                 echo "</select><br>";
                 $shown_devices = $shown_devices + 1;
             }
-            echo "<h4>New Vehicle</h4>";
+            echo "<h4>New Device</h4>";
             echo "<label for='devices>" . $shown_devices . ">id'>Identifier:</label> <input name='devices>" . $shown_devices . ">id' id='devices>" . $shown_devices . ">id' placeholder='abcdef123456789' type='text'><br>";
             echo '<label for="devices>' . $shown_devices . '>name">Name:</label> <input name="devices>' . $shown_devices . '>name" id="devices>' . $shown_devices . '>name" placeholder="North Driveway" type="text"><br>';
             echo "<select name='devices>" . $shown_devices . ">type' id='devices>" . $shown_devices . ">type'>";
