@@ -12,6 +12,8 @@ While Gatekeeper is designed to be secure and reliable, for ideal security, you 
 
 Gatekeeper is a web utility that interfaces with one or more [Predator Fabric](https://v0lttech.com/predatorfabric.php) instances over a network to detect when vehicles enter/exit a property. The intended use case for Gatekeeper is for home owners who want to receive detailed notifications when someone enters their property, as well as the ability to quickly identify them. However, it is worth clarifying that Gatekeeper is not intended to be a security tool, and you should not rely on it for safety critical notifications.
 
+Unlike a simple driveway entry alarm, Gatekeeper can identify individual vehicles so you know exactly who has entered your property. Additionally, Gatekeeper can send push notifications to your phone, or even use pre-recorded speech samples to announce alerts over your home's audio system.
+
 
 ## Features
 
