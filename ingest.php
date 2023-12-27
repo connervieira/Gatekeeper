@@ -17,9 +17,9 @@ if (in_array($identifier, array_keys($gatekeeper_config["devices"]))) { // Check
     $gatekeeper_events[$event_key] = array();
     $gatekeeper_events[$event_key]["device"] = $identifier;
     foreach ($processed_data["results"] as $key => $plates) { // Iterate through each plate in the received results.
-        $key_plate = $processed_data["results"][$key][0]["plate"]; // Use the first plate guess as the key.
+        $key_plate = $processed_data["results"][$key][0]["plate"]; // Use the first plate guess as the key by default.
         foreach ($plates as $guess) { // Iterate through each guess for this plate.
-            if (in_array($guess["plate"], array_keys($gatekeeper_config["vehicles"]))) { // Check to see if this guess matches a vehicle in the configuration databases.
+            if (in_array($guess["plate"], array_keys($gatekeeper_config["vehicles"]))) { // Check to see if this guess matches a vehicle in the configuration database.
                 $key_plate = $guess["plate"]; // Make this guess the key.
             }
         }

@@ -37,32 +37,36 @@ $unheard_alerts = check_for_alerts();
         <?php
 
         $displayed_events = 0; // This is a placeholder that will be incremented for each event shown to keep track of how many events are displayed.
-        foreach ($events_database as $time => $data) { // Iterate through each event in the event database.
-            if ($displayed_events >= 5) { break; } // Exit the loop after the 5 most recent events have been displayed.
+        if (sizeof($events_database) > 0) { // Check to see if there is at least one event in the database.
+            foreach ($events_database as $time => $data) { // Iterate through each event in the event database.
+                if ($displayed_events >= 5) { break; } // Exit the loop after the 5 most recent events have been displayed.
 
-            $age = time() - $time; // Calculate the number of seconds that have passed since this event occurred.
+                $age = time() - $time; // Calculate the number of seconds that have passed since this event occurred.
 
-            echo "<div class='eventdisplay'>";
-            echo "<h3>" . date("Y-m-d H:i:s", $time) . "</h3>"; // Display the date and time that this event occurred.
-            echo "<p class=\"agetext\">" . seconds_to_human_readable($age) . " ago</p>"; // Display the age of this event in a human readable format.
-            foreach (array_keys($data["plates"]) as $plate) { // Iterate through each plate in this event.
-                if (isset($plate)) {
-                    if (in_array($plate, array_keys($gatekeeper_config["vehicles"]))) { // Check to see if this plate matches a known plate from the configuration.
-                        echo "<p class=\"platetext\"><b>" . $plate . "</b></p>"; // Display this plate in bold.
-                    } else {
-                        echo "<p class=\"platetext\">" . $plate . "</p>"; // Display this plate in plain text.
+                echo "<div class='eventdisplay'>";
+                echo "<h3>" . date("Y-m-d H:i:s", $time) . "</h3>"; // Display the date and time that this event occurred.
+                echo "<p class=\"agetext\">" . seconds_to_human_readable($age) . " ago</p>"; // Display the age of this event in a human readable format.
+                foreach (array_keys($data["plates"]) as $plate) { // Iterate through each plate in this event.
+                    if (isset($plate)) {
+                        if (in_array($plate, array_keys($gatekeeper_config["vehicles"]))) { // Check to see if this plate matches a known plate from the configuration.
+                            echo "<p class=\"platetext\"><b>" . $plate . "</b></p>"; // Display this plate in bold.
+                        } else {
+                            echo "<p class=\"platetext\">" . $plate . "</p>"; // Display this plate in plain text.
+                        }
                     }
                 }
+                echo "</div>";
+                $displayed_events++; // Increment the displayed events counter.
             }
-            echo "</div>";
-            $displayed_events++; // Increment the displayed events counter.
+        } else {
+            echo "<p><i>No events have been recorded.</i></p>";
         }
 
 
         if ($gatekeeper_config["alerts"]["voice"]["enabled"]) {
             $first_unheard_alert = array_slice($unheard_alerts, 0, 1, true);
             foreach ($first_unheard_alert as $time => $alert) {
-                speak_alert($time, $alert["alert"][1], $alert["alert"][0], $alert["alert"][2]);
+                speak_alert($time, $alert["alert"]["vehicles"], $alert["alert"]["device"], $alert["alert"]["type"]);
             }
         }
         ?>
