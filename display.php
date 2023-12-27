@@ -32,7 +32,7 @@ $unheard_alerts = check_for_alerts();
         ?>
     </head>
 
-    <body>
+    <body style="padding:0px;">
         <?php
 
         $displayed_events = 0; // This is a placeholder that will be incremented for each event shown to keep track of how many events are displayed.
