@@ -44,7 +44,8 @@ $unheard_alerts = check_for_alerts();
                 $age = time() - $time; // Calculate the number of seconds that have passed since this event occurred.
 
                 echo "<div class='eventdisplay'>";
-                echo "<h3>" . date("Y-m-d H:i:s", $time) . "</h3>"; // Display the date and time that this event occurred.
+                echo "<h3>" . $gatekeeper_config["devices"][$data["device"]]["name"] . "</h3>"; // Display the date and time that this event occurred.
+                echo "<h3 style='margin-top:-20px;'>" . date("Y-m-d H:i:s", $time) . "</h3>"; // Display the date and time that this event occurred.
                 echo "<p class=\"agetext\">" . seconds_to_human_readable($age) . " ago</p>"; // Display the age of this event in a human readable format.
                 foreach (array_keys($data["plates"]) as $plate) { // Iterate through each plate in this event.
                     if (isset($plate)) {
