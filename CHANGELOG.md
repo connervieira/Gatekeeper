@@ -4,6 +4,6 @@
 
 ### Initial Release
 
-*Release date to be determined*
+January 15th, 2024
 
 - Core functionality
